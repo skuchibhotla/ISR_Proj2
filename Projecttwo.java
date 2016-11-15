@@ -60,56 +60,50 @@ public class Projecttwo {
 
 		Projecttwo p2 = new Projecttwo();
 		BufferedReader br = null;
+		String sCurrentLine;
 		
 			int i = p2.processing("dataset");
 			if (i == 1) {		
-	                    Set<String> newsGroupset = dataContent.keySet();
-						for (String newsGrp : newsGroupset) {
-							System.out.println(newsGrp);
-							Documents d =new Documents(newsGrp,dataContent.get(newsGrp));
-							docList.add(d);
-						}
-       			for(Documents d : docList){
-				d.wordFrequency = p2.calculateWordFrequency(d.docContent);
-				d.wordsinDocument = d.wordFrequency.keySet();
-				System.out.println(d.wordsinDocument);
-				d.weightIFIDF1 = p2.calculatetfidf1(d.wordFrequency);
-				System.out.println(d.weightIFIDF1);
-//				d.weightIFIDF2 = p2.calculate-tfidf1(d.wordFrequency);
-//				d.weightIFIDF3 = p2.calculate-tfidf1(d.wordFrequency);
-//				
-					
+				Set<String> newsGroupset = dataContent.keySet();
+				for (String newsGrp : newsGroupset) {
+					System.out.println(newsGrp);
+					Documents d =new Documents(newsGrp,dataContent.get(newsGrp));
+					docList.add(d);
 				}
-						
+				for(Documents d : docList){
+					d.wordFrequency = p2.calculateWordFrequency(d.docContent);
+					d.wordsinDocument = d.wordFrequency.keySet();
+					System.out.println(d.wordsinDocument);
+					d.weightIFIDF1 = p2.calculatetfidf1(d.wordFrequency);
+					d.weightIFIDF2 = p2.calculatetfidf2(d.wordFrequency);
+					d.weightIFIDF3 = p2.calculatetfidf3(d.wordFrequency);
+				//	System.out.println(d.weightIFIDF1);
+				//	System.out.println(d.weightIFIDF2);
+				//	System.out.println(d.weightIFIDF3);		
+				}
 				
-//			}  catch (Exception e) {
-//			// TODO Auto-generated catch block
-//				System.out.println("Excpetion occured "+e);
-//			
-//		}
+				try
+				{
+				br = new BufferedReader(new FileReader("input.txt"));
+				while ((sCurrentLine = br.readLine()) != null) {
+					String[] queryTerms = sCurrentLine.split(",");
+					ArrayList<String> list =new ArrayList<String>();
+					for (String word:queryTerms){
+						list.add(word);
+					}
+					Documents query = new Documents("Query",list);
+					query.wordFrequency = p2.calculateWordFrequency(query.docContent);
+					query.weightIFIDF3 = p2.calculatetfidf3(query.wordFrequency);
+					
+					}
+				br.close();
+				}catch(Exception e){
+					System.out.println("thsinis fileerror"+e);
+				}
 			}
 	}
 
-
-
-	private int caluculateCount(ArrayList <String> newsgroupContent, String word)
-	{
-		int count = 0;
-		for (String record : newsgroupContent)
-		{
-			String[] words = record.split("\\s+");
-			for (String tempWord : words) {
-				if (tempWord.equals(word))
-					count = count + 1;
-			}
-			if(record.contains(word))
-			{
-				count = count + 1;
-			}
-		}
-		return count;
-	}
-	private Map<String,Integer> calculateWordFrequency(List<String>docContent){
+private Map<String,Integer> calculateWordFrequency(List<String>docContent){
 		 Map<String,Integer> wordFrequency = new HashMap<String, Integer>();
 		 for (String record : docContent){			
 			 String[] words = record.split("\\s+");
@@ -139,13 +133,20 @@ public class Projecttwo {
 	private Map<String,Double> calculatetfidf2(Map<String,Integer>wordFrequency ){
 		
 		Map<String,Double> tfidf2 = new HashMap<String, Double>();
-		
+		for (String word : (wordFrequency.keySet())){
+			double tfidf = 1 + Math.log(wordFrequency.get(word))/Math.log(2);
+			tfidf2.put(word,tfidf);
+		}
 		return tfidf2;
 	}
 	private Map<String,Double> calculatetfidf3(Map<String,Integer>wordFrequency ){
 		
 		Map<String,Double> tfidf3 = new HashMap<String, Double>();
-		
+		for (String word : (wordFrequency.keySet())){
+			double idf = calIDF(word);
+			double tfidf = (1 + Math.log(wordFrequency.get(word))/Math.log(2)) * (idf);
+			tfidf3.put(word,tfidf);
+		}
 		return tfidf3;
 	}
 private double calIDF(String word){
