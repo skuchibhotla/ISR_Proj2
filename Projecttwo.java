@@ -72,27 +72,25 @@ public class Projecttwo {
 			if (i == 1) {		
 				Set<String> newsGroupset = dataContent.keySet();
 				for (String newsGrp : newsGroupset) {
-//					System.out.println(newsGrp);
 					Documents d =new Documents(newsGrp,dataContent.get(newsGrp));
 					docList.add(d);
 				}
-//				System.out.println(docList);
 				for(Documents d : docList){
 					d.wordFrequency = p2.calculateWordFrequency(d.docContent);
 					d.wordsinDocument = d.wordFrequency.keySet();
-			//		System.out.println(d.wordsinDocument);
 					d.weightIFIDF1 = p2.calculatetfidf1(d.wordFrequency);
 					d.weightIFIDF2 = p2.calculatetfidf2(d.wordFrequency);
-					d.weightIFIDF3 = p2.calculatetfidf3(d.wordFrequency);
-				//	System.out.println(d.weightIFIDF1);
-				//	System.out.println(d.weightIFIDF2);
-				//	System.out.println(d.weightIFIDF3);		
+					d.weightIFIDF3 = p2.calculatetfidf3(d.wordFrequency);	
 				}
 				
 				try
 				{
 				br = new BufferedReader(new FileReader("input.txt"));
 				while ((sCurrentLine = br.readLine()) != null) {
+					System.out.println();
+					System.out.println("Rank of all the documents using 3 different weighing schemas");
+					System.out.println("Input Query******** "+sCurrentLine+" *****");
+					System.out.println("-------------------------------------------------------------------------------------------");
 					String[] queryTerms = sCurrentLine.split(",");
 					ArrayList<String> list =new ArrayList<String>();
 					for (String word:queryTerms){
@@ -103,9 +101,16 @@ public class Projecttwo {
 					query.weightIFIDF3 = p2.calculatetfidf3(query.wordFrequency);
 					query.weightIFIDF2 = p2.calculateQueryTFIDF2(query.wordFrequency);
 					query.weightIFIDF1 = p2.calculateQueryTFIDF1(query.wordFrequency);
-				    p2.ranking(query,3);
+					p2.ranking(query,1);
 				    p2.ranking(query,2);
-				    p2.ranking(query,1);
+				    p2.ranking(query,3);	
+				    
+				    System.out.format("%-25s%-25s%-25s%-25s\n","Newsgroup", "Rank(Weighing schema1)","Rank(Weighing schema2)","Rank(Weighing schema3)");
+				    System.out.println("----------------------------------------------------------------------------------------------");
+				    for (Documents doc:docList){
+				    //	System.out.println(doc.name+"			"+doc.rank1+"				"+doc.rank2+"				"+doc.rank3);
+				    	 System.out.format("%-25s%-25s%-25s%-25s\n", doc.name,doc.rank1,doc.rank2,doc.rank3);
+				    }
 				    
 					}
 				br.close();
@@ -117,21 +122,25 @@ public class Projecttwo {
 	
 private void ranking(Documents query,int option){
 	if(option == 1)	{
-		System.out.println("This is based on TFIDF 1 ***********************************");
+//		System.out.println("This is based on TFIDF 1 ***********************************");
 		for(Documents doc:docList){
-			System.out.println("Rank of document "+doc.name+" is "+ rankDocument (query.weightIFIDF1,doc.weightIFIDF1));	
+			doc.rank1 = rankDocument (query.weightIFIDF1,doc.weightIFIDF1);
+//			System.out.println("Rank of document "+doc.name+" is "+doc.rank1);
+			
 		}
 }
 	else if (option ==2){
-		System.out.println("This is based on TFIDF 2 ***********************************");
+//		System.out.println("This is based on TFIDF 2 ***********************************");
 		for(Documents doc:docList){
-			System.out.println("Rank of document "+doc.name+" is "+ rankDocument (query.weightIFIDF2,doc.weightIFIDF2));	
+			doc.rank2 = rankDocument (query.weightIFIDF2,doc.weightIFIDF2);
+//			System.out.println("Rank of document "+doc.name+" is "+doc.rank2);	
 		}
 	}
 	else if (option == 3){
-		System.out.println("This is based on TFIDF 3 ***********************************");		
+//		System.out.println("This is based on TFIDF 3 ***********************************");		
 		for(Documents doc:docList){
-			System.out.println("Rank of document "+doc.name+" is "+ rankDocument (query.weightIFIDF3,doc.weightIFIDF3));	
+			doc.rank3 = rankDocument (query.weightIFIDF3,doc.weightIFIDF3);
+//			System.out.println("Rank of document "+doc.name+" is "+doc.rank3);	
 		}
 	}
 }
@@ -160,7 +169,8 @@ private double calculateNormalization(Map<String,Double>vector){
 	return Math.sqrt(w); 
 }
 
-private Map<String,Integer> calculateWordFrequency(List<String>docContent){
+private Map<String,Integer> calculateWordFrequency(List<String>docContent)
+{
 		 Map<String,Integer> wordFrequency = new HashMap<String, Integer>();
 		 for (String record : docContent){			
 			 String[] words = record.split("\\s+");
@@ -176,8 +186,9 @@ private Map<String,Integer> calculateWordFrequency(List<String>docContent){
 //			 System.out.println(wordFrequency);
 		 }
 		 return wordFrequency;
-	 }
-	private Map<String,Double> calculatetfidf1(Map<String,Integer>wordFrequency ){
+}
+	private Map<String,Double> calculatetfidf1(Map<String,Integer>wordFrequency )
+	{
 		
 		Map<String,Double> tfidf1 = new HashMap<String, Double>();
 		for (String word : (wordFrequency.keySet())){
@@ -231,6 +242,9 @@ private Map<String,Double> calculateQueryTFIDF2(Map<String,Integer>wordFrequency
 			double n = 0;
 			for(Documents doc : docList){
 				Map words = doc.wordFrequency;
+				/*if(words==null)  {
+					System.out.println("Doc Name : "+doc.name);
+				}*/
 				if((words!=null)&&(words.containsKey(word))){
 					n = n+1;
 				}
@@ -253,14 +267,9 @@ private double calIDF(String word){
 	}	
 	if(n != 0)
 		d = Math.log(N/n)/Math.log(2);
-	
-//	System.out.println("word : "+word);
-//	System.out.println("IDF :" +d);
 	return d;
 	}	
 }
-
-
 
 class Documents
 {
@@ -272,6 +281,9 @@ class Documents
 	 Map<String, Double> weightIFIDF1;
 	 Map<String, Double> weightIFIDF2;
 	 Map<String, Double> weightIFIDF3;
+	 double rank1;
+	 double rank2;
+	 double rank3;
 	 ArrayList<String> docContent;
 	 Documents(String name,ArrayList<String> docContent){
 		 this.name = name;
