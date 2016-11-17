@@ -9,5 +9,6 @@ Inputfiles:
 Input.txt This file contains queries
  Eample: atheism,altism
          databas,silicon,query,document
+In the example there are two queries first one is atheism,altism and second one is databas,silicon,query,document
 		 
-Dataset.txt this contains 20 news group data. 
+Dataset.txt this contains 20 news group data
