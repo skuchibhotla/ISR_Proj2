@@ -12,3 +12,13 @@ Input.txt This file contains queries
 In the example there are two queries first one is atheism,altism and second one is databas,silicon,query,document
 		 
 Dataset.txt this contains 20 news group data
+
+Implementation: 
+
+The current working directory should contain two input files: Dataset.txt and input.txt.
+
+How to Compile?
+javac Projecttwo.java
+
+How to Run?
+java Projecttwo
