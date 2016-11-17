@@ -1,0 +1,3 @@
+name
+databas,databas,databas,graphic,articl,algorithm
+databas, databas, databas
