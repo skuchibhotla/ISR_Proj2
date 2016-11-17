@@ -1,3 +1,9 @@
+/*	
+	CSCI 8360: Information Storage and Retrieval
+	Project 2
+	Mahender Reddy Marrivagu, Shashank Kuchibhotla
+*/
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
