@@ -160,6 +160,7 @@ private double rankDocument(Map<String,Double>queryWeight,Map<String,Double>Docu
 			numerator += DocumentWeight.get(term)*queryWeight.get(term);
 		}
 	}
+	if(normalization!=0)
 	rank = numerator/normalization;
 	return rank;
 }
